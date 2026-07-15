@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Var Mısın Yok Musun? Mobil - 2026</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: url('images/arka_plan.png') no-repeat center center fixed;
+            background-image: url('images/arka_plan.png'), url('arka_plan.png'), radial-gradient(circle, #1a1a2e 0%, #0f0f1a 100%);
+            background-size: cover;
+            background-color: #0c0c16; 
+            color: #fff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+            box-sizing: border-box;
+        }
+
+        .landscape-uyari {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #0f0f1a;
+            z-index: 9999;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .landscape-uyari img {
+            width: 80px;
+            margin-bottom: 20px;
+            animation: dondur 2s infinite ease-in-out;
+        }
+
+        @keyframes dondur {
+            0% { transform: rotate(0deg); }
+            50% { transform: rotate(-90deg); }
+            100% { transform: rotate(0deg); }
+        }
+
+        .oyun-sahnesi {
+            display: flex;
+            width: 100%;
+            height: 98vh;
+            padding: 5px;
+            gap: 10px;
+            position: relative;
+            box-sizing: border-box;
+        }
+
+        .odul-paneli {
+            width: 110px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 2px;
+            box-sizing: border-box;
+            flex-shrink: 0;
+        }
+
+        .odul-kart {
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 10px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.5), 0 2px 4px rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.08);
+        }
+
+        .odul-kart.mavi { background: linear-gradient(135deg, #0052d4, #4364f7, #6fb1fc); }
+        .odul-kart.sari { background: linear-gradient(135deg, #f12711, #f5af19); color: #000; text-shadow: none; }
+        .odul-kart.kirmizi { background: linear-gradient(135deg, #cc1111, #ff3333); }
+
+        .odul-kart.elendi {
+            background: #202025 !important;
+            color: #444 !important;
+            opacity: 0.35;
+        }
+
+        .merkez-alani {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            height: 100%;
+            box-sizing: border-box;
+            gap: 5px;
+        }
+
+        .kendi-kutun-alani {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+            height: auto;
+        }
+
+        .yerdeki-kutular {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 5px;
+            max-width: 460px;
+            width: 100%;
+        }
+
+        .giris-kutu, .yerdeki-kutu {
+            width: 44px;
+            height: 44px;
+            position: relative;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .giris-kutu-gorsel, .kutu-gorsel {
+            width: 100%;
+            height: 100%;
+            background: url('images/kutu_kapali.png') no-repeat center center;
+            background-image: url('images/kutu_kapali.png'), url('kutu_kapali.png');
+            background-size: contain;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .kutu-acildi-sakla {
+            pointer-events: none !important;
+            opacity: 0 !important;
+        }
+
+        .kutu-numara-etiket {
+            font-size: 11px;
+            font-weight: bold;
+            color: #fff;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.9);
+        }
+
+        .sunucu-alani {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            max-width: 450px;
+        }
+
+        .sunucu-resim {
+            width: 75px;
+            height: auto;
+            object-fit: contain;
+            margin-top: -5px;
+        }
+
+        .sunucu-balonu {
+            background: rgba(15, 15, 26, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 10px;
+            padding: 4px 8px;
+            font-size: 11px;
+            text-align: center;
+            color: #e4e4e7;
+            width: 98%;
+            min-height: 26px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-sizing: border-box;
+        }
+
+        #giris-ekrani, #bitti-ekrani {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 15, 26, 0.98);
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        #giris-ekrani h1 { font-size: 22px; margin-bottom: 5px; color: #ffcc00; }
+        #giris-kutular { display: flex; flex-wrap: wrap; justify-content: center; gap: 5px; max-width: 420px; }
+
+        #karar-ekrani {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(20, 20, 35, 0.98);
+            border: 2px solid #ffcc00;
+            border-radius: 12px;
+            padding: 15px;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            z-index: 150;
+            width: 240px;
+            text-align: center;
+        }
+
+        #karar-ekrani h3 { margin: 0; color: #ffcc00; font-size: 16px; }
+        #teklif-degeri { font-size: 24px; font-weight: bold; color: #28a745; margin: 8px 0; }
+        .karar-butonlar { display: flex; gap: 10px; }
+
+        .btn {
+            border: none;
+            padding: 8px 18px;
+            font-size: 12px;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        .btn-tamam { background: #28a745; color: #fff; }
+        .btn-devam { background: #dc3545; color: #fff; }
+
+        /* Sadece dikey tutulduğunda uyarıyı göster */
+        @media (orientation: portrait) {
+            .oyun-sahnesi { display: none !important; }
+            .landscape-uyari { display: flex !important; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="landscape-uyari">
+        <img src="https://cdn-icons-png.flaticon.com/512/74/74482.png" alt="Telefonu Döndür">
+        <h2 style="color: #ffcc00; margin: 10px 0;">Lütfen Telefonu Yan Çevirin</h2>
+        <p style="color: #aaa; font-size: 14px;">Daha iyi bir stüdyo deneyimi için oyunu yatay modda oynamalısınız.</p>
+    </div>
+
+    <div class="oyun-sahnesi">
+        <div class="odul-paneli" id="sol-oduller"></div>
+        <div class="merkez-alani" id="merkez-alani">
+            
+            <div class="kendi-kutun-alani" id="kendi-kutun-alani" style="display:none;">
+                <div class="giris-kutu">
+                    <div class="giris-kutu-gorsel">
+                        <div class="kutu-numara-etiket" id="kendi-kutu-etiket">0</div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="alt-durum-metni" style="display:none;"></div>
+            <div class="yerdeki-kutular" id="yerdeki-kutular"></div>
+
+            <div class="sunucu-alani">
+                <div class="sunucu-balonu" id="sunucu-balonu">Büyük ödül 5.000.000 ₺! Önce bir kutu seç.</div>
+                <img id="sunucu-resim" src="images/sunucu_normal.png" class="sunucu-resim" alt="Sunucu" onerror="this.src='sunucu_normal.png'">
+            </div>
+
+        </div>
+        <div class="odul-paneli" id="sag-oduller"></div>
+
+        <div id="karar-ekrani">
+            <h3>Banka Kararını Bekliyor</h3>
+            <div id="teklif-degeri">₺0</div>
+            <div class="karar-butonlar">
+                <button class="btn btn-tamam" onclick="kararVer(true)">TAMAM</button>
+                <button class="btn btn-devam" onclick="kararVer(false)">DEVAM</button>
+            </div>
+        </div>
+
+        <div id="giris-ekrani">
+            <h1>Var Mısın Yok Musun?</h1>
+            <div id="giris-kutular"></div>
+        </div>
+
+        <div id="bitti-ekrani" style="display:none;">
+            <h1 style="color: #ffcc00; font-size: 24px;">OYUN BİTTİ!</h1>
+            <p id="bitti-mesaji" style="font-size: 14px;"></p>
+            <button class="btn btn-tamam" onclick="oyunuSifirla()">YENI OYUN</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
