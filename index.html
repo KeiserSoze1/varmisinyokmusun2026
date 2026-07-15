@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Var mısın yok musun 2026</title>
+    <meta name="description" content="Efsane yarışma Var mısın Yok musun artık güncel formatıyla web tarayıcınızda! Kutunu seç, bankanın acımasız tekliflerini reddet ve büyük ödülü kazan.">
+    <meta name="keywords" content="varmısın yokmusun, var mısın yok musun oyna, varmısın yokmusun güncel, kutu açma oyunu, kutu seçme oyunu, banka teklifi oyunu, retro varmısın yokmusun, tarayıcıda kutu oyunu, esra erol varmısın yokmusun, online kutu açma oyunu, çerezlik web oyunları">
+    <meta name="author" content="Ahmet Arif">
+
+    <meta property="og:title" content="Varmısın Yokmusun? - Güncel Formatlı Kutu Açma Oyunu">
+    <meta property="og:description" content="Kutunu seç, heyecana ortak ol! Bankayı batırıp büyük ödülle stüdyodan ayrılabilecek misin? Hemen ücretsiz oyna.">
+    <meta property="og:image" content="images/kutu_kapali.png">
+    <meta property="og:type" content="website">
+    
+    <style>
+        /* === GENEL TASARIM VE ARKAPLAN === */
+        body {
+            margin: 0;
+            padding: 0;
+            background: radial-gradient(circle, #1a1a2e 0%, #0f0f1a 100%);
+            color: #fff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            box-sizing: border-box;
+            overflow-x: hidden;
+        }
+
+        /* === ANA OYUN SAHNESİ === */
+        .oyun-sahnesi {
+            display: flex;
+            width: 100%;
+            max-width: 1200px;
+            height: 100vh;
+            max-height: 750px;
+            padding: 20px;
+            box-sizing: border-box;
+            gap: 15px;
+            position: relative;
+        }
+
+        /* === ÖDÜL PANELLERİ (SOL VE SAĞ) === */
+        .odul-paneli {
+            width: 160px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 100%;
+            gap: 4px;
+            box-sizing: border-box;
+            z-index: 5;
+        }
+
+        .odul-kart {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 13px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.5), 0 2px 4px rgba(0,0,0,0.3);
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .odul-kart.mavi { background: linear-gradient(135deg, #0052d4, #4364f7, #6fb1fc); }
+        .odul-kart.sari { background: linear-gradient(135deg, #f12711, #f5af19); color: #000; text-shadow: none; }
+        .odul-kart.kirmizi { background: linear-gradient(135deg, #cc1111, #ff3333); }
+
+        .odul-kart.elendi {
+            background: #2d2d2d !important;
+            color: #555 !important;
+            text-shadow: none !important;
+            box-shadow: none !important;
+            border: 1px solid #111;
+            transform: scale(0.95);
+            opacity: 0.5;
+        }
+
+        /* === MERKEZ OYUN ALANI === */
+        .merkez-alani {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            height: 100%;
+            position: relative;
+            box-sizing: border-box;
+            padding: 10px 0;
+        }
+
+        /* === GİRİŞ VE BİTİŞ EKRANLARI === */
+        #giris-ekrani, #bitti-ekrani {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 15, 26, 0.98);
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            box-sizing: border-box;
+            text-align: center;
+        }
+
+        #giris-ekrani h1 {
+            font-size: 32px;
+            margin-bottom: 20px;
+            color: #ffcc00;
+            text-shadow: 0 0 10px rgba(255,204,0,0.3);
+        }
+
+        #giris-kutular {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            max-width: 600px;
+            margin-bottom: 20px;
+        }
+
+        /* === KUTULARIN ORTAK ÖZELLİKLERİ === */
+        .giris-kutu, .yerdeki-kutu {
+            width: 65px;
+            height: 65px;
+            position: relative;
+            cursor: pointer;
+            transition: transform 0.2s ease, filter 0.2s ease;
+        }
+
+        .giris-kutu:hover, .yerdeki-kutu:hover {
+            transform: scale(1.1);
+        }
+
+        .giris-kutu-gorsel, .kutu-gorsel {
+            width: 100%;
+            height: 100%;
+            background: url('images/kutu_kapali.png') no-repeat center center;
+            background-size: contain;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .kutu-numara-etiket {
+            font-size: 16px;
+            font-weight: bold;
+            color: #fff;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.9);
+            margin-top: 5px;
+        }
+
+        /* === KUTU ALANLARI === */
+        .kendi-kutun-alani {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .yerdeki-kutular {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 8px;
+            max-width: 620px;
+            width: 100%;
+        }
+
+        /* === SUNUCU VE KONUŞMA BALONU === */
+        .sunucu-alani {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            max-width: 500px;
+        }
+
+        .sunucu-resim {
+            width: 120px;
+            height: auto;
+            object-fit: contain;
+        }
+
+        .sunucu-balonu {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 12px;
+            padding: 12px 18px;
+            font-size: 14px;
+            line-height: 1.5;
+            text-align: center;
+            color: #e0e0e0;
+            width: 90%;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            min-height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* === KARAR VE TEKLİF EKRANI === */
+        #karar-ekrani {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(26, 26, 46, 0.95);
+            border: 2px solid #ffcc00;
+            border-radius: 16px;
+            padding: 20px;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            box-shadow: 0 0 30px rgba(255,204,0,0.2);
+            z-index: 50;
+            width: 280px;
+            text-align: center;
+        }
+
+        #karar-ekrani h3 { margin: 0 0 10px 0; color: #ffcc00; }
+        #teklif-degeri { font-size: 28px; font-weight: bold; color: #28a745; margin: 10px 0; }
+        .karar-butonlar { display: flex; gap: 15px; margin-top: 15px; }
+
+        .btn {
+            border: none;
+            padding: 10px 20px;
+            font-size: 15px;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.1s ease;
+        }
+        .btn:active { transform: scale(0.95); }
+        .btn-tamam { background: #28a745; color: #fff; }
+        .btn-devam { background: #dc3545; color: #fff; }
+
+        /* === MOBİL UYUMLULUK SİHİRLİ DOKUNUŞU 📱 === */
+        @media (max-width: 768px) {
+            .oyun-sahnesi {
+                flex-direction: column !important;
+                height: auto !important;
+                max-height: none !important;
+                padding: 10px !important;
+                gap: 10px !important;
+                justify-content: flex-start !important;
+            }
+
+            /* Sol ve sağ ödül panellerini yan yana ve esnek yap */
+            .odul-paneli {
+                width: 100% !important;
+                flex-direction: row !important;
+                flex-wrap: wrap !important;
+                justify-content: center !important;
+                gap: 3px !important;
+                height: auto !important;
+            }
+
+            .odul-kart {
+                font-size: 10px !important;
+                padding: 4px 6px !important;
+                min-width: 60px !important;
+                flex: none !important;
+            }
+
+            /* Merkez alanını dikey düzende sıkıştır */
+            .merkez-alani {
+                width: 100% !important;
+                height: auto !important;
+                gap: 15px !important;
+            }
+
+            /* Kutuları mobilde parmakla seçilebilecek kadar BÜYÜT */
+            .giris-kutu, .yerdeki-kutu {
+                width: 75px !important;
+                height: 75px !important;
+            }
+
+            .kutu-numara-etiket {
+                font-size: 18px !important;
+            }
+
+            .yerdeki-kutular {
+                gap: 6px !important;
+            }
+
+            .sunucu-resim {
+                width: 90px !important;
+            }
+
+            .sunucu-balonu {
+                font-size: 13px !important;
+                padding: 10px !important;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="giris-ekrani" id="giris-ekrani">
+        <h1 class="giris-baslik">Kendi Kutunu Seçerek Oyuna Başla!</h1>
+        <div class="giris-kutular-izgarasi" id="giris-kutular"></div>
+    </div>
+
+    <div class="oyun-sahnesi">
+        <div class="odul-paneli" id="sol-oduller"></div>
+
+        <div class="merkez-alanı">
+            <div class="konusma-balonu" id="sunucu-balonu">Peki tamam, iletiyorum...</div>
+
+            <div class="sunucu-konteyner">
+                <img src="images/sunucu_normal.png" id="sunucu-resim" class="sunucu-resim" alt="Sunucu">
+            </div>
+
+            <div class="sanal-masa-maskesi"></div>
+
+            <div class="kendi-kutun-alani" id="kendi-kutun-alani" style="display:none;">
+                <div class="kutu-numara-etiket" id="kendi-kutu-etiket">00</div>
+                <div class="kendi-kutun-box"></div>
+            </div>
+
+            <div id="alt-durum-metni">Yerde kalan kutulardan 4 tane aç!</div>
+
+            <div class="kutular-tablosu" id="yerdeki-kutular"></div>
+        </div>
+
+        <div class="odul-paneli" id="sag-oduller"></div>
+
+        <div class="banka-karar-ekrani" id="karar-ekrani">
+            <div class="karar-kart">
+                <h2>Banka Kararını Bekliyor</h2>
+                <p style="color:#aaa;">Teklifi kabul ediyor musun?</p>
+                <div class="teklif-miktarı" id="teklif-degeri">₺0</div>
+                <div class="karar-butonlar">
+                    <button class="karar-btn btn-tamam" onclick="kararVer(true)">TAMAM</button>
+                    <button class="karar-btn btn-devam" onclick="kararVer(false)">DEVAM</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="oyun-bitti-ekrani" id="bitti-ekrani">
+            <div class="bitti-kart">
+                <h1 style="color:#ffcc00; margin-bottom: 15px;">OYUN BİTTİ!</h1>
+                <p id="bitti-mesaji" style="font-size: 22px; line-height: 1.5; color: #fff;"></p>
+                <button class="btn-tekrar" onclick="oyunuSifirla()">YENİDEN BAŞLA</button>
+                <div class="reklam-kutusu">Reklam Alanı (AdSense / Sponsor)</div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
