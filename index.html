@@ -108,7 +108,7 @@
             z-index: 5;
         }
 
-        /* === 2. BİLGİ METNİ (KENDİ KUTUNUN HEMEN ALTINDA) === */
+        /* === 2. BİLGİ METNİ === */
         .durum-metni-konum {
             font-size: 16px; 
             color: #ffcc00; 
@@ -119,14 +119,14 @@
             text-shadow: 1px 1px 4px rgba(0,0,0,0.8);
         }
 
-        /* === 3. ORTA KATMAN: MASAYA CUK OTURAN SUNUCU === */
+        /* === 3. ORTA KATMAN: MASAYA SIFIRLANMIŞ SUNUCU === */
         .sunucu-alani {
             display: flex;
             flex-direction: column;
             align-items: center;
             width: 100%;
             max-width: 600px;
-            margin-top: auto; /* Dikey boşlukta masaya doğru esnemesi için */
+            margin-top: auto; 
             margin-bottom: -5px;
             z-index: 2;
         }
@@ -135,8 +135,8 @@
             width: 260px; 
             height: auto;
             object-fit: contain;
-            margin-top: 30px; /* Esra Erol'u tam olarak arkadaki ahşap masaya oturttuk */
-            margin-bottom: -12px; /* Masanın tam arkasına sıfırlansın */
+            margin-top: 35px; 
+            margin-bottom: -24px; /* Sunucuyu masanın arkasına tam sıfırlamak için aşağı çektik */
         }
 
         .sunucu-balonu {
@@ -157,7 +157,7 @@
             box-sizing: border-box;
         }
 
-        /* === 4. EN ALT KATMAN: YERDEKİ KUTULAR (3x7 GRID DÜZENİ) === */
+        /* === 4. EN ALT KATMAN: YERDEKİ KUTULAR === */
         .yerdeki-kutular {
             display: grid;
             grid-template-columns: repeat(7, 110px); 
@@ -214,7 +214,7 @@
             margin-top: 5px;
         }
 
-        /* === GİRİŞ VE BİTİŞ EKRANLARI === */
+        /* Giriş/Bitiş ve Karar ekranı stilleri aynen korundu */
         #giris-ekrani, #bitti-ekrani {
             position: absolute;
             top: 0;
@@ -248,7 +248,6 @@
             margin-bottom: 25px;
         }
 
-        /* === KARAR VE TEKLİF EKRANI === */
         #karar-ekrani {
             position: absolute;
             top: 50%;
@@ -291,7 +290,6 @@
             margin-bottom: 30px;
         }
 
-        /* === SÜZÜLEN PARA VE PARLAMA ANIMASYONLARI === */
         .floating-value {
             font-size: 28px;
             font-weight: bold;
@@ -302,18 +300,9 @@
         }
 
         @keyframes suzulVeKaybol {
-            0% {
-                transform: translateY(0) scale(0.8);
-                opacity: 0;
-            }
-            20% {
-                opacity: 1;
-                transform: translateY(-10px) scale(1.2);
-            }
-            100% {
-                transform: translateY(-120px) scale(1);
-                opacity: 0;
-            }
+            0% { transform: translateY(0) scale(0.8); opacity: 0; }
+            20% { opacity: 1; transform: translateY(-10px) scale(1.2); }
+            100% { transform: translateY(-120px) scale(1); opacity: 0; }
         }
 
         .parlaklik-efekti {
@@ -326,31 +315,16 @@
         }
 
         @keyframes patlaVeSön {
-            0% {
-                transform: scale(0.2);
-                opacity: 0;
-            }
-            20% {
-                opacity: 1;
-                transform: scale(1);
-            }
-            100% {
-                transform: scale(1.8);
-                opacity: 0;
-            }
+            0% { transform: scale(0.2); opacity: 0; }
+            20% { opacity: 1; transform: scale(1); }
+            100% { transform: scale(1.8); opacity: 0; }
         }
     </style>
 </head>
 <body>
-
     <div class="oyun-sahnesi">
-        <!-- SOL ÖDÜL PANELİ -->
         <div class="odul-paneli" id="sol-oduller"></div>
-
-        <!-- MERKEZ ALAN -->
         <div class="merkez-alani" id="merkez-alani">
-            
-            <!-- 1. EN ÜSTTE: KENDİ KUTUN -->
             <div class="kendi-kutun-alani" id="kendi-kutun-alani" style="display:none;">
                 <div class="giris-kutu">
                     <div class="giris-kutu-gorsel">
@@ -359,50 +333,15 @@
                 </div>
                 <div style="font-size: 13px; color: #ffcc00; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;">Senin Kutun</div>
             </div>
-
-            <!-- 2. DURUM/BİLGİ METNİ -->
             <div id="alt-durum-metni" class="durum-metni-konum">Yerde kalan kutulardan 4 tane aç!</div>
-
-            <!-- 3. ORTADA: MASAYA TAM SIFIRLANMIŞ SUNUCU -->
             <div class="sunucu-alani">
                 <div class="sunucu-balonu" id="sunucu-balonu">Büyük ödül 5.000.000 ₺! Masandaki kutuya gitmek için önce bir kutu seç.</div>
                 <img id="sunucu-resim" src="images/sunucu_normal.png" class="sunucu-resim" alt="Sunucu" onerror="this.style.display='none'; this.src='sunucu_normal.png'">
             </div>
-
-            <!-- 4. EN ALTTA: YERDEKİ KUTULAR (3x7 GRID) -->
             <div class="yerdeki-kutular" id="yerdeki-kutular"></div>
-
         </div>
-
-        <!-- SAĞ ÖDÜL PANELİ -->
         <div class="odul-paneli" id="sag-oduller"></div>
-
-        <!-- BANKA KARAR EKRANI -->
-        <div id="karar-ekrani">
-            <h3>Banka Kararını Bekliyor</h3>
-            <p style="color: #aaa; margin: 0; font-size: 13px;">Teklifi kabul ediyor musun?</p>
-            <div id="teklif-degeri">₺0</div>
-            <div class="karar-butonlar">
-                <button class="btn btn-tamam" onclick="kararVer(true)">TAMAM</button>
-                <button class="btn btn-devam" onclick="kararVer(false)">DEVAM</button>
-            </div>
-        </div>
-
-        <!-- GİRİŞ EKRANI (KUTU SEÇME) -->
-        <div id="giris-ekrani">
-            <h1>Var Mısın Yok Musun?</h1>
-            <p style="color: #aaa; margin-top: -15px; margin-bottom: 25px; font-size: 15px;">Kendi kutunu seçerek oyuna başla!</p>
-            <div id="giris-kutular"></div>
-        </div>
-
-        <!-- BİTİŞ EKRANI -->
-        <div id="bitti-ekrani" style="display:none;">
-            <h1 style="color: #ffcc00; font-size: 36px; margin-bottom: 15px; text-shadow: 0 0 10px rgba(255,204,0,0.3);">OYUN BİTTİ!</h1>
-            <p id="bitti-mesaji"></p>
-            <button class="btn btn-tamam" onclick="oyunuSifirla()" style="padding: 14px 40px; font-size: 18px;">YENİDEN BAŞLA</button>
-        </div>
     </div>
-
     <script src="script.js"></script>
 </body>
 </html>
